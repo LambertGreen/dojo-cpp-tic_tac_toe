@@ -5,7 +5,7 @@ namespace TicTacToe {
 
 enum class PlayerToken { One, Two };
 
-class Board {
+class GameBoard {
 public:
   enum class Cell { Empty, PlayerOneToken, PlayTwoToken };
 

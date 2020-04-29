@@ -4,6 +4,8 @@
 #include <stdexcept>
 
 using namespace TicTacToe;
+
+using Game = GameEngineCore;
 using Player = Game::Player;
 
 void TestNewGame() {

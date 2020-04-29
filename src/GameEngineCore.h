@@ -4,7 +4,7 @@
 
 namespace TicTacToe {
 
-class Game {
+class GameEngineCore {
 public:
   enum class Player { One, Two };
 
@@ -50,7 +50,7 @@ private:
   PlayerToken GetCurrentPlayerToken();
 
   State m_state{};
-  Board m_board{};
+  GameBoard m_board{};
 
   static PlayStats s_stats;
 };

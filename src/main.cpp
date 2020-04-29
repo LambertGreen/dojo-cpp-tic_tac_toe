@@ -5,6 +5,8 @@
 
 using namespace TicTacToe;
 
+using Game = GameEngineCore;
+
 void ShowAppHeader() {
   std::cout << "--------------------------------" << std::endl;
   std::cout << "Welcome to the Tic-tac-toe game!" << std::endl;

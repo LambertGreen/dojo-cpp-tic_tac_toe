@@ -14,12 +14,12 @@ int PositionToCol(int pos) { return (pos - 1) % 3; }
 
 namespace TicTacToe {
 
-void Game::NewGame() {
+void GameEngineCore::NewGame() {
   m_board.Clear();
   m_state = State::PlayerOnesTurn;
 }
 
-Game::Player Game::GetCurrentPlayer() {
+GameEngineCore::Player GameEngineCore::GetCurrentPlayer() {
   switch (m_state) {
   case State::PlayerOnesTurn:
     return Player::One;
@@ -32,11 +32,11 @@ Game::Player Game::GetCurrentPlayer() {
   }
 }
 
-void Game::PlayTurn(int position) {
+void GameEngineCore::PlayTurn(int position) {
   PlayTurn(PositionToRow(position), PositionToCol(position));
 }
 
-void Game::PlayTurn(int row, int col) {
+void GameEngineCore::PlayTurn(int row, int col) {
   // Throw if game is over
   switch (m_state) {
   case State::Draw:
@@ -88,12 +88,12 @@ void Game::PlayTurn(int row, int col) {
   s_stats.TurnCount++;
 }
 
-bool Game::IsPositionOpen(int position) {
+bool GameEngineCore::IsPositionOpen(int position) {
   return m_board.IsPositionOpen(PositionToRow(position),
                                 PositionToCol(position));
 }
 
-bool Game::IsGameOver() {
+bool GameEngineCore::IsGameOver() {
   switch (m_state) {
   case State::PlayerOnesTurn:
   case State::PlayerTwosTurn:
@@ -106,9 +106,9 @@ bool Game::IsGameOver() {
   }
 }
 
-bool Game::IsDraw() { return m_state == State::Draw; }
+bool GameEngineCore::IsDraw() { return m_state == State::Draw; }
 
-Game::Player Game::GetWinner() {
+GameEngineCore::Player GameEngineCore::GetWinner() {
   switch (m_state) {
   case State::PlayerOneWon:
     return Player::One;
@@ -121,11 +121,11 @@ Game::Player Game::GetWinner() {
   }
 };
 
-void Game::PrintBoard() {
+void GameEngineCore::PrintBoard() {
   std::cout << "Board:" << std::endl << m_board.ToString() << std::flush;
 }
 
-PlayerToken Game::GetCurrentPlayerToken() {
+PlayerToken GameEngineCore::GetCurrentPlayerToken() {
   if (m_state == State::PlayerOnesTurn)
     return PlayerToken::One;
   if (m_state == State::PlayerTwosTurn)
@@ -135,16 +135,16 @@ PlayerToken Game::GetCurrentPlayerToken() {
 }
 
 // Static data and functions
-Game::PlayStats Game::s_stats{};
-Game::PlayStats Game::GetStats() { return s_stats; }
-void Game::ClearStats() {
+GameEngineCore::PlayStats GameEngineCore::s_stats{};
+GameEngineCore::PlayStats GameEngineCore::GetStats() { return s_stats; }
+void GameEngineCore::ClearStats() {
   s_stats.PlayerOneWinCount = 0;
   s_stats.PlayerTwoWinCount = 0;
   s_stats.DrawCount = 0;
   s_stats.TurnCount = 0;
 }
 
-void Game::PrintStats() {
+void GameEngineCore::PrintStats() {
   auto totalGames =
       s_stats.PlayerOneWinCount + s_stats.PlayerTwoWinCount + s_stats.DrawCount;
   auto percentPlayerOneWins =
