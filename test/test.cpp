@@ -1,4 +1,4 @@
-#include "../src/game.h"
+#include "../src/GameEngineCore.h"
 
 #include <iostream>
 #include <stdexcept>
