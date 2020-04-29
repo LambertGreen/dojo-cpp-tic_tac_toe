@@ -46,8 +46,9 @@ private:
     Draw
   };
 
-  void PlayTurn(int row, int col);
   PlayerToken GetCurrentPlayerToken();
+  void PlayTurn(int row, int col);
+  bool IsWinningPlay(PlayerToken token, int row, int col);
 
   State m_state{};
   GameBoard m_board{};

@@ -7,9 +7,11 @@
 using namespace TicTacToe;
 
 namespace {
+
 int PositionToRow(int pos) { return (pos - 1) / 3; }
 
 int PositionToCol(int pos) { return (pos - 1) % 3; }
+
 } // namespace
 
 namespace TicTacToe {
@@ -33,13 +35,8 @@ void GameEngineCore::PlayTurn(int position) {
 
 void GameEngineCore::PlayTurn(int row, int col) {
   // Throw if game is over
-  switch (m_state) {
-  case State::Draw:
-  case State::PlayerOneWon:
-  case State::PlayerTwoWon:
+  if (IsGameOver()) {
     throw std::runtime_error("Game is already over");
-  default:
-    break;
   }
 
   // Place player token on board
@@ -47,12 +44,7 @@ void GameEngineCore::PlayTurn(int row, int col) {
   m_board.PlaceToken(playerToken, row, col);
 
   // Check if player won
-  if (m_board.GetTokenCountInRow(playerToken, row) == 3 ||
-      m_board.GetTokenCountInCol(playerToken, col) == 3 ||
-      m_board.GetTokenCountInDiag(playerToken,
-                                  true /*topLeftBottomRightDiag*/) == 3 ||
-      m_board.GetTokenCountInDiag(playerToken,
-                                  false /*topLeftBottomRightDiag*/) == 3) {
+  if (IsWinningPlay(playerToken, row, col)) {
     switch (GetCurrentPlayer()) {
     case Player::One:
       m_state = State::PlayerOneWon;
@@ -129,6 +121,15 @@ PlayerToken GameEngineCore::GetCurrentPlayerToken() {
   throw std::runtime_error("Game is over!");
 }
 
+bool GameEngineCore::IsWinningPlay(PlayerToken token, int row, int col) {
+
+  return (m_board.GetTokenCountInRow(token, row) == 3 ||
+          m_board.GetTokenCountInCol(token, col) == 3 ||
+          m_board.GetTokenCountInDiag(token, true /*topLeftBottomRightDiag*/) ==
+              3 ||
+          m_board.GetTokenCountInDiag(token,
+                                      false /*topLeftBottomRightDiag*/) == 3);
+}
 // Static data and functions
 GameEngineCore::PlayStats GameEngineCore::s_stats{};
 GameEngineCore::PlayStats GameEngineCore::GetStats() { return s_stats; }
