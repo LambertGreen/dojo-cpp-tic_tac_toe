@@ -1,9 +1,16 @@
 #include "game.h"
 
 #include <exception>
+#include <iomanip>
 #include <iostream>
 
 using namespace TicTacToe;
+
+namespace {
+int PositionToRow(int pos) { return (pos - 1) / 3; }
+
+int PositionToCol(int pos) { return (pos - 1) % 3; }
+} // namespace
 
 namespace TicTacToe {
 
@@ -25,15 +32,22 @@ Game::Player Game::GetCurrentPlayer() {
   }
 }
 
-void Game::PlayTurn(int index) {
-  auto row = index / 3;
-  auto col = index % 3;
-  PlayTurn(row, col);
+void Game::PlayTurn(int position) {
+  PlayTurn(PositionToRow(position), PositionToCol(position));
 }
 
 void Game::PlayTurn(int row, int col) {
-  ThrowIfGameAlreadyOver();
+  // Throw if game is over
+  switch (m_state) {
+  case State::Draw:
+  case State::PlayerOneWon:
+  case State::PlayerTwoWon:
+    throw std::runtime_error("Game is already over");
+  default:
+    break;
+  }
 
+  // Place player token on board
   auto playerToken = GetCurrentPlayerToken();
   m_board.PlaceToken(playerToken, row, col);
 
@@ -44,13 +58,24 @@ void Game::PlayTurn(int row, int col) {
                                   true /*topLeftBottomRightDiag*/) == 3 ||
       m_board.GetTokenCountInDiag(playerToken,
                                   false /*topLeftBottomRightDiag*/) == 3) {
-    m_state = State::PlayerOneWon;
+    switch (GetCurrentPlayer()) {
+    case Player::One:
+      m_state = State::PlayerOneWon;
+      s_stats.PlayerOneWinCount++;
+      break;
+
+    case Player::Two:
+      m_state = State::PlayerTwoWon;
+      s_stats.PlayerTwoWinCount++;
+      break;
+    }
     return;
   }
 
-  // Check if game is finished
+  // Check if game is a draw
   if (m_board.IsBoardFull()) {
     m_state = State::Draw;
+    s_stats.DrawCount++;
     return;
   }
 
@@ -60,6 +85,12 @@ void Game::PlayTurn(int row, int col) {
   } else if (m_state == State::PlayerTwosTurn) {
     m_state = State::PlayerOnesTurn;
   }
+  s_stats.TurnCount++;
+}
+
+bool Game::IsPositionOpen(int position) {
+  return m_board.IsPositionOpen(PositionToRow(position),
+                                PositionToCol(position));
 }
 
 bool Game::IsGameOver() {
@@ -103,17 +134,41 @@ PlayerToken Game::GetCurrentPlayerToken() {
   throw std::runtime_error("Game is over!");
 }
 
-void Game::ThrowIfGameAlreadyOver() {
-  switch (m_state) {
-  case State::PlayerOnesTurn:
-  case State::PlayerTwosTurn:
-    return;
+// Static data and functions
+Game::PlayStats Game::s_stats{};
+Game::PlayStats Game::GetStats() { return s_stats; }
+void Game::ClearStats() {
+  s_stats.PlayerOneWinCount = 0;
+  s_stats.PlayerTwoWinCount = 0;
+  s_stats.DrawCount = 0;
+  s_stats.TurnCount = 0;
+}
 
-  case State::Draw:
-  case State::PlayerOneWon:
-  case State::PlayerTwoWon:
-    throw std::runtime_error("Game is already over");
-  }
+void Game::PrintStats() {
+  auto totalGames =
+      s_stats.PlayerOneWinCount + s_stats.PlayerTwoWinCount + s_stats.DrawCount;
+  auto percentPlayerOneWins =
+      totalGames > 0
+          ? 100 * static_cast<double>(s_stats.PlayerOneWinCount) / totalGames
+          : 0;
+  auto percentPlayerTwoWins =
+      totalGames > 0
+          ? 100 * static_cast<double>(s_stats.PlayerTwoWinCount) / totalGames
+          : 0;
+  auto percentDraws =
+      totalGames > 0 ? 100 * static_cast<double>(s_stats.DrawCount) / totalGames
+                     : 0;
+
+  std::cout.precision(2);
+  std::cout << "Games Stats: { "
+            << "TotalGames: " << totalGames
+            << ", PlayerOneWins: " << s_stats.PlayerOneWinCount << "("
+            << std::fixed << percentPlayerOneWins << "%)"
+            << ", PlayerTwoWins: " << s_stats.PlayerTwoWinCount << "("
+            << std::fixed << percentPlayerTwoWins << "%)"
+            << ", Draws: " << s_stats.DrawCount << "(" << std::fixed
+            << percentDraws << "%)"
+            << ", Turns: " << s_stats.TurnCount << " }" << std::endl;
 }
 
 } // namespace TicTacToe

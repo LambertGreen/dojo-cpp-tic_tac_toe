@@ -20,7 +20,7 @@ char ToChar(Board::Cell c) {
   }
 }
 
-int RowColToIndex(int row, int col) { return row * 3 + col; }
+int RowColToPosition(int row, int col) { return row * 3 + col + 1; }
 } // namespace
 
 namespace TicTacToe {
@@ -42,6 +42,10 @@ void Board::PlaceToken(PlayerToken p, int row, int col) {
   m_board[row][col] =
       p == PlayerToken::One ? Cell::PlayerOneToken : Cell::PlayTwoToken;
   m_playCount++;
+}
+
+bool Board::IsPositionOpen(int row, int col) {
+  return m_board[row][col] == Cell::Empty;
 }
 
 bool Board::IsBoardFull() { return m_playCount == 9; }
@@ -94,8 +98,9 @@ int Board::GetTokenCountInDiag(PlayerToken p, bool topLeftBottomRightDiag) {
 
 std::string Board::CellToString(int row, int col) {
   auto cell = m_board[row][col];
-  auto cellStr = cell == Cell::Empty ? std::to_string(RowColToIndex(row, col))
-                                     : std::string(1, ToChar(cell));
+  auto cellStr = cell == Cell::Empty
+                     ? std::to_string(RowColToPosition(row, col))
+                     : std::string(1, ToChar(cell));
   return "[" + cellStr + "]";
 }
 

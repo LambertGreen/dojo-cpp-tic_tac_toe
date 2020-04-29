@@ -11,6 +11,7 @@ public:
 
   void Clear();
   void PlaceToken(PlayerToken p, int row, int col);
+  bool IsPositionOpen(int row, int col);
   bool IsBoardFull();
   int GetTokenCountInRow(PlayerToken p, int row);
   int GetTokenCountInCol(PlayerToken p, int col);
