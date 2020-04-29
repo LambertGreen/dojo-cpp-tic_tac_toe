@@ -14,11 +14,6 @@ int PositionToCol(int pos) { return (pos - 1) % 3; }
 
 namespace TicTacToe {
 
-void GameEngineCore::NewGame() {
-  m_board.Clear();
-  m_state = State::PlayerOnesTurn;
-}
-
 GameEngineCore::Player GameEngineCore::GetCurrentPlayer() {
   switch (m_state) {
   case State::PlayerOnesTurn:

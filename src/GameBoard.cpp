@@ -25,15 +25,6 @@ int RowColToPosition(int row, int col) { return row * 3 + col + 1; }
 
 namespace TicTacToe {
 
-void GameBoard::Clear() {
-  for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 3; j++) {
-      m_board[i][j] = Cell::Empty;
-    }
-  }
-  m_playCount = 0;
-}
-
 void GameBoard::PlaceToken(PlayerToken p, int row, int col) {
   if (m_board[row][col] != Cell::Empty) {
     throw std::runtime_error("Position is not empty");
