@@ -1,3 +1,5 @@
+#pragma once
+
 #include <array>
 #include <string>
 
@@ -9,17 +11,26 @@ class GameBoard {
 public:
   enum class Cell { Empty, PlayerOneToken, PlayTwoToken };
 
-  void PlaceToken(PlayerToken p, int row, int col);
+  // The position values for each cell are numbered from 1 to 9
+  // starting with 1 in the top-left, incrementing by 1 going from
+  // left to right.
+  //
+  // Position numbers:
+  //   1 2 3
+  //   4 5 6
+  //   7 8 9
+  //
+  void PlaceToken(PlayerToken token, int pos);
+  bool IsPositionOpen(int pos) const;
+  bool IsBoardFull() const;
 
-  bool IsPositionOpen(int row, int col);
-  bool IsBoardFull();
-  int GetTokenCountInRow(PlayerToken p, int row);
-  int GetTokenCountInCol(PlayerToken p, int col);
-  int GetTokenCountInDiag(PlayerToken p, bool topLeftBottomRightDiag);
-  std::string ToString();
+  int GetTokenCountInRow(PlayerToken token, int pos) const;
+  int GetTokenCountInCol(PlayerToken token, int pos) const;
+  int GetTokenCountInDiag(PlayerToken token, bool topLeftBottomRightDiag) const;
+  std::string ToString() const;
 
 private:
-  std::string CellToString(int row, int col);
+  std::string CellToString(int row, int col) const;
 
   std::array<std::array<Cell, 3>, 3> m_board{};
   int m_playCount{};

@@ -7,7 +7,7 @@ using namespace TicTacToe;
 
 namespace {
 
-char ToChar(GameBoard::Cell c) {
+char CellToChar(GameBoard::Cell c) {
   switch (c) {
   case GameBoard::Cell::Empty:
     return '_';
@@ -20,29 +20,41 @@ char ToChar(GameBoard::Cell c) {
   }
 }
 
-int RowColToPosition(int row, int col) { return row * 3 + col + 1; }
+int PosToRow(int pos) { return (pos - 1) / 3; }
+
+int PosToCol(int pos) { return (pos - 1) % 3; }
+
+int RowColToPos(int row, int col) { return row * 3 + col + 1; }
+
 } // namespace
 
 namespace TicTacToe {
 
-void GameBoard::PlaceToken(PlayerToken p, int row, int col) {
+void GameBoard::PlaceToken(PlayerToken token, int pos) {
+  auto row = PosToRow(pos);
+  auto col = PosToCol(pos);
+
   if (m_board[row][col] != Cell::Empty) {
     throw std::runtime_error("Position is not empty");
   }
 
   m_board[row][col] =
-      p == PlayerToken::One ? Cell::PlayerOneToken : Cell::PlayTwoToken;
+      token == PlayerToken::One ? Cell::PlayerOneToken : Cell::PlayTwoToken;
   m_playCount++;
 }
 
-bool GameBoard::IsPositionOpen(int row, int col) {
+bool GameBoard::IsPositionOpen(int pos) const {
+  auto row = PosToRow(pos);
+  auto col = PosToCol(pos);
   return m_board[row][col] == Cell::Empty;
 }
 
-bool GameBoard::IsBoardFull() { return m_playCount == 9; }
+bool GameBoard::IsBoardFull() const { return m_playCount == 9; }
 
-int GameBoard::GetTokenCountInRow(PlayerToken p, int row) {
-  auto cell = p == PlayerToken::One ? Cell::PlayerOneToken : Cell::PlayTwoToken;
+int GameBoard::GetTokenCountInRow(PlayerToken token, int pos) const {
+  auto row = PosToRow(pos);
+  auto cell =
+      token == PlayerToken::One ? Cell::PlayerOneToken : Cell::PlayTwoToken;
   int count = 0;
   if (cell == m_board[row][0])
     count++;
@@ -53,8 +65,10 @@ int GameBoard::GetTokenCountInRow(PlayerToken p, int row) {
   return count;
 }
 
-int GameBoard::GetTokenCountInCol(PlayerToken p, int col) {
-  auto cell = p == PlayerToken::One ? Cell::PlayerOneToken : Cell::PlayTwoToken;
+int GameBoard::GetTokenCountInCol(PlayerToken token, int pos) const {
+  auto col = PosToCol(pos);
+  auto cell =
+      token == PlayerToken::One ? Cell::PlayerOneToken : Cell::PlayTwoToken;
   int count = 0;
   if (cell == m_board[0][col])
     count++;
@@ -65,8 +79,10 @@ int GameBoard::GetTokenCountInCol(PlayerToken p, int col) {
   return count;
 }
 
-int GameBoard::GetTokenCountInDiag(PlayerToken p, bool topLeftBottomRightDiag) {
-  auto cell = p == PlayerToken::One ? Cell::PlayerOneToken : Cell::PlayTwoToken;
+int GameBoard::GetTokenCountInDiag(PlayerToken token,
+                                   bool topLeftBottomRightDiag) const {
+  auto cell =
+      token == PlayerToken::One ? Cell::PlayerOneToken : Cell::PlayTwoToken;
   int count = 0;
   if (topLeftBottomRightDiag) {
 
@@ -87,15 +103,14 @@ int GameBoard::GetTokenCountInDiag(PlayerToken p, bool topLeftBottomRightDiag) {
   return count;
 }
 
-std::string GameBoard::CellToString(int row, int col) {
+std::string GameBoard::CellToString(int row, int col) const {
   auto cell = m_board[row][col];
-  auto cellStr = cell == Cell::Empty
-                     ? std::to_string(RowColToPosition(row, col))
-                     : std::string(1, ToChar(cell));
+  auto cellStr = cell == Cell::Empty ? std::to_string(RowColToPos(row, col))
+                                     : std::string(1, CellToChar(cell));
   return "[" + cellStr + "]";
 }
 
-std::string GameBoard::ToString() {
+std::string GameBoard::ToString() const {
   std::stringstream ss;
   for (int row = 0; row < 3; row++) {
     for (int col = 0; col < 3; col++) {

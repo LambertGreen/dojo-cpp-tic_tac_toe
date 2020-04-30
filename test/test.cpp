@@ -8,10 +8,14 @@ using namespace TicTacToe;
 using Game = GameEngineCore;
 using Player = Game::Player;
 
+void ShowGameBoard(const Game &game) {
+  std::cout << "Board:" << std::endl
+            << game.GetBoard().ToString() << std::flush;
+}
+
 void TestNewGame() {
   Game game;
-  game.PrintBoard();
-  game.PrintStats();
+  ShowGameBoard(game);
 }
 
 void TestPlayOneFirstPlay() {
@@ -23,8 +27,7 @@ void TestPlayOneFirstPlay() {
   // 7 8 9
   game.PlayTurn(1);
 
-  game.PrintBoard();
-  game.PrintStats();
+  ShowGameBoard(game);
 }
 
 void TestPlayTwoFirstPlay() {
@@ -37,8 +40,7 @@ void TestPlayTwoFirstPlay() {
   game.PlayTurn(1);
   game.PlayTurn(2);
 
-  game.PrintBoard();
-  game.PrintStats();
+  ShowGameBoard(game);
 }
 
 void TestPlayerOneWinsInRow() {
@@ -64,8 +66,7 @@ void TestPlayerOneWinsInRow() {
   // 7 8 9
   game.PlayTurn(3);
 
-  game.PrintBoard();
-  game.PrintStats();
+  ShowGameBoard(game);
 
   if (game.GetWinner() != Player::One) {
     throw std::runtime_error("PlayerOne is expected to have won!");
@@ -96,8 +97,7 @@ void TestPlayerTwoWinsInCol() {
   game.PlayTurn(4);
   game.PlayTurn(9);
 
-  game.PrintBoard();
-  game.PrintStats();
+  ShowGameBoard(game);
 
   if (game.GetWinner() != Player::Two) {
     throw std::runtime_error("PlayerTwo is expected to have won!");
@@ -141,8 +141,7 @@ void TestDraw() {
   // @ @ #
   game.PlayTurn(7);
 
-  game.PrintBoard();
-  game.PrintStats();
+  ShowGameBoard(game);
 
   if (!game.IsDraw()) {
     throw std::runtime_error("Expected a draw!");

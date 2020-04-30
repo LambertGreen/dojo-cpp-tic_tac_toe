@@ -1,3 +1,4 @@
+#include "GameAnalysis.h"
 #include "GameEngineCore.h"
 
 #include <exception>
@@ -7,6 +8,13 @@ using namespace TicTacToe;
 
 using Game = GameEngineCore;
 
+enum class Option {
+  NewGame,
+  RunSimToGetPlayStats,
+  Exit,
+};
+
+namespace {
 void ShowAppHeader() {
   std::cout << "--------------------------------" << std::endl;
   std::cout << "Welcome to the Tic-tac-toe game!" << std::endl;
@@ -23,12 +31,6 @@ void ShowMainMenu() {
   std::cout << " [x] - Exit" << std::endl;
 }
 
-enum class Option {
-  NewGame,
-  RunSimulation,
-  Exit,
-};
-
 Option GetMainMenuOption() {
   while (true) {
     char input;
@@ -36,7 +38,7 @@ Option GetMainMenuOption() {
     if (input == 'x')
       return Option::Exit;
     if (input == 'r')
-      return Option::RunSimulation;
+      return Option::RunSimToGetPlayStats;
     if (input == 'n')
       return Option::NewGame;
     std::cout << "Not a valid option!" << std::endl;
@@ -87,14 +89,18 @@ void ShowException(const std::exception &ex) {
   std::cout << "Exception occurred: " << ex.what();
 }
 
+void ShowBoard(const Game &game) {
+  std::cout << "Board:" << std::endl
+            << game.GetBoard().ToString() << std::flush;
+}
+
 void ShowEndGame(Game &game) {
-  game.PrintBoard();
+  ShowBoard(game);
   if (game.IsDraw()) {
     ShowDraw();
   } else {
     ShowPlayerVictory(GetPlayerName(game.GetWinner()));
   }
-  game.PrintStats();
 }
 
 void PlayTwoPlayerGame() {
@@ -102,7 +108,7 @@ void PlayTwoPlayerGame() {
     Game game;
 
     while (!game.IsGameOver()) {
-      game.PrintBoard();
+      ShowBoard(game);
       game.PlayTurn(
           GetPlayerInputForTurn(GetPlayerName(game.GetCurrentPlayer())));
     }
@@ -114,29 +120,12 @@ void PlayTwoPlayerGame() {
   }
 }
 
-void SimPlay(Game game, bool showOutput) {
-  if (game.IsGameOver()) {
-    if (showOutput) {
-      ShowEndGame(game);
-    }
-    return;
-  }
-
-  for (int pos = 1; pos <= 9; pos++) {
-    if (game.IsPositionOpen(pos)) {
-      auto gameCopy = game;
-      gameCopy.PlayTurn(pos);
-      SimPlay(gameCopy, showOutput);
-    }
-  }
-}
-
-void RunSimulation() {
+void RunSimToGetPlayStats() {
   Game game;
-  bool showOutput = false;
-  SimPlay(game, showOutput);
-  game.PrintStats();
+  auto stats = GetPlayStats(game);
+  PrintPlayStats(stats);
 }
+} // namespace
 
 int main(int argc, char *argv[]) {
 
@@ -155,8 +144,8 @@ int main(int argc, char *argv[]) {
       PlayTwoPlayerGame();
       break;
 
-    case Option::RunSimulation:
-      RunSimulation();
+    case Option::RunSimToGetPlayStats:
+      RunSimToGetPlayStats();
       break;
     }
   }

@@ -1,5 +1,5 @@
 # create library
-add_library(tic-tac-toe_lib GameEngineCore.cpp GameBoard.cpp)
+add_library(tic-tac-toe_lib GameEngineCore.cpp GameBoard.cpp GameAnalysis.cpp)
 
 # create executable
 add_executable(tic-tac-toe main.cpp)

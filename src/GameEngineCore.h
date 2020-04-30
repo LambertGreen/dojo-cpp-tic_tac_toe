@@ -1,6 +1,6 @@
-#include "GameBoard.h"
+#pragma once
 
-#include <array>
+#include "GameBoard.h"
 
 namespace TicTacToe {
 
@@ -8,8 +8,6 @@ class GameEngineCore {
 public:
   enum class Player { One, Two };
 
-  void NewGame();
-  Player GetCurrentPlayer();
   // The position values for each cell are numbered from 1 to 9
   // starting with 1 in the top-left, incrementing by 1 going from
   // left to right.
@@ -20,24 +18,14 @@ public:
   //   7 8 9
   //
   void PlayTurn(int position);
-  bool IsPositionOpen(int position);
-  bool IsGameOver();
-  bool IsDraw();
-  Player GetWinner();
 
-  void PrintBoard();
+  Player GetCurrentPlayer() const;
+  bool IsGameOver() const;
+  bool IsDraw() const;
+  Player GetWinner() const;
+  GameBoard GetBoard() const;
 
-  struct PlayStats {
-    long PlayerOneWinCount;
-    long PlayerTwoWinCount;
-    long DrawCount;
-    long TurnCount;
-  };
-  static PlayStats GetStats();
-  static void ClearStats();
-  static void PrintStats();
-
-private:
+protected:
   enum class State {
     PlayerOnesTurn,
     PlayerTwosTurn,
@@ -45,14 +33,13 @@ private:
     PlayerTwoWon,
     Draw
   };
+  virtual void UpdateState(State newState);
 
-  PlayerToken GetCurrentPlayerToken();
-  void PlayTurn(int row, int col);
-  bool IsWinningPlay(PlayerToken token, int row, int col);
+private:
+  PlayerToken GetCurrentPlayerToken() const;
+  bool IsWinningPlay(PlayerToken token, int pos) const;
 
   State m_state{};
   GameBoard m_board{};
-
-  static PlayStats s_stats;
 };
 } // namespace TicTacToe
