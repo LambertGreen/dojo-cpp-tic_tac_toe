@@ -136,9 +136,11 @@ void ShowPlayStats(Game game) {
   std::cout << "Play stats for current player by open postion: " << std::endl;
   std::cout.precision(2);
   for (auto &stats : playStats) {
-    std::cout << "\tPos(" << stats.Pos
-              << "):{ Win/Loss diff = " << stats.WinLossDiff
-              << ", Draw count = " << stats.DrawCount << " }" << std::endl;
+    std::cout << "\tPos(" << stats.Pos << "): "
+              << "Win = " << std::fixed << 100 * stats.WinProbability << "%, "
+              << "Loss = " << std::fixed << 100 * stats.LossProbability << "%, "
+              << "Draw = " << std::fixed << 100 * stats.DrawProbalitity << "%"
+              << std::endl;
   }
   std::cout << std::endl;
 }

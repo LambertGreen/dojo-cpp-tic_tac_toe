@@ -53,11 +53,20 @@ std::vector<PlayStats> GetPlayStatsForOpenPositions(Game game) {
       auto currentPlayer = game.GetCurrentPlayer();
       PlayStats stats;
       stats.Pos = pos;
-      stats.WinLossDiff =
+      stats.WinProbability =
           currentPlayer == Player::One
-              ? gameStats.PlayerOneWinCount - gameStats.PlayerTwoWinCount
-              : gameStats.PlayerTwoWinCount - gameStats.PlayerOneWinCount;
-      stats.DrawCount = gameStats.DrawCount;
+              ? static_cast<double>(gameStats.PlayerOneWinCount) /
+                    gameStats.GameCount
+              : static_cast<double>(gameStats.PlayerTwoWinCount) /
+                    gameStats.GameCount;
+      stats.LossProbability =
+          currentPlayer == Player::One
+              ? static_cast<double>(gameStats.PlayerTwoWinCount) /
+                    gameStats.GameCount
+              : static_cast<double>(gameStats.PlayerOneWinCount) /
+                    gameStats.GameCount;
+      stats.DrawProbalitity =
+          static_cast<double>(gameStats.DrawCount) / gameStats.GameCount;
       playStats.push_back(stats);
     }
   }

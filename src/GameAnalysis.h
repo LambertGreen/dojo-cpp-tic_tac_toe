@@ -19,8 +19,9 @@ struct GameStats {
 
 struct PlayStats {
   int Pos{};
-  long WinLossDiff{};
-  long DrawCount{};
+  double WinProbability;
+  double LossProbability;
+  double DrawProbalitity;
 };
 
 GameStats GetGameStats(Game game);
