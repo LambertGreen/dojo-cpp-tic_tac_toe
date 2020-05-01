@@ -10,7 +10,7 @@ using Game = GameEngineCore;
 
 enum class Option {
   NewGame,
-  RunSimToGetPlayStats,
+  RunSimToGetGameStats,
   Exit,
 };
 
@@ -29,6 +29,8 @@ void ShowMainMenu() {
   std::cout << " [n] - New Game" << std::endl;
   std::cout << " [r] - Run simulations" << std::endl;
   std::cout << " [x] - Exit" << std::endl;
+  std::cout << std::endl;
+  std::cout << "Enter menu option: ";
 }
 
 Option GetMainMenuOption() {
@@ -38,7 +40,7 @@ Option GetMainMenuOption() {
     if (input == 'x')
       return Option::Exit;
     if (input == 'r')
-      return Option::RunSimToGetPlayStats;
+      return Option::RunSimToGetGameStats;
     if (input == 'n')
       return Option::NewGame;
     std::cout << "Not a valid option!" << std::endl;
@@ -103,12 +105,57 @@ void ShowEndGame(Game &game) {
   }
 }
 
+void ShowGameStats(const GameStats &stats) {
+  auto totalGames = stats.GameCount;
+  auto percentPlayerOneWins =
+      totalGames > 0
+          ? 100 * static_cast<double>(stats.PlayerOneWinCount) / totalGames
+          : 0;
+  auto percentPlayerTwoWins =
+      totalGames > 0
+          ? 100 * static_cast<double>(stats.PlayerTwoWinCount) / totalGames
+          : 0;
+  auto percentDraws =
+      totalGames > 0 ? 100 * static_cast<double>(stats.DrawCount) / totalGames
+                     : 0;
+
+  std::cout.precision(2);
+  std::cout << "Games Stats: { "
+            << "TotalGames: " << totalGames
+            << ", PlayerOneWins: " << stats.PlayerOneWinCount << "("
+            << std::fixed << percentPlayerOneWins << "%)"
+            << ", PlayerTwoWins: " << stats.PlayerTwoWinCount << "("
+            << std::fixed << percentPlayerTwoWins << "%)"
+            << ", Draws: " << stats.DrawCount << "(" << std::fixed
+            << percentDraws << "%)"
+            << ", Turns: " << stats.TurnCount << " }" << std::endl;
+}
+
+void ShowPlayStats(Game game) {
+  auto playStats = GetPlayStatsForOpenPositions(game);
+  std::cout << "Play stats for current player by open postion: " << std::endl;
+  std::cout.precision(2);
+  for (auto &stats : playStats) {
+    std::cout << "\tPos(" << stats.Pos
+              << "):{ Win/Loss diff = " << stats.WinLossDiff
+              << ", Draw count = " << stats.DrawCount << " }" << std::endl;
+  }
+  std::cout << std::endl;
+}
+
+void RunSimToGetGameStats() {
+  Game game;
+  auto stats = GetGameStats(game);
+  ShowGameStats(stats);
+}
+
 void PlayTwoPlayerGame() {
   try {
     Game game;
 
     while (!game.IsGameOver()) {
       ShowBoard(game);
+      ShowPlayStats(game);
       game.PlayTurn(
           GetPlayerInputForTurn(GetPlayerName(game.GetCurrentPlayer())));
     }
@@ -120,11 +167,6 @@ void PlayTwoPlayerGame() {
   }
 }
 
-void RunSimToGetPlayStats() {
-  Game game;
-  auto stats = GetPlayStats(game);
-  PrintPlayStats(stats);
-}
 } // namespace
 
 int main(int argc, char *argv[]) {
@@ -144,8 +186,8 @@ int main(int argc, char *argv[]) {
       PlayTwoPlayerGame();
       break;
 
-    case Option::RunSimToGetPlayStats:
-      RunSimToGetPlayStats();
+    case Option::RunSimToGetGameStats:
+      RunSimToGetGameStats();
       break;
     }
   }

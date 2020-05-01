@@ -1,18 +1,28 @@
+#pragma once
+
 #include "GameEngineCore.h"
+
+#include <vector>
 
 namespace TicTacToe {
 
 using Game = GameEngineCore;
-struct PlayStats {
+using Player = Game::Player;
+
+struct GameStats {
   long TurnCount{};
   long GameCount{};
   long PlayerOneWinCount{};
   long PlayerTwoWinCount{};
   long DrawCount{};
 };
-using PlayStatsByPosition = std::array<std::unique_ptr<PlayStats>, 9>;
 
-PlayStats GetPlayStats(Game game);
-void PrintPlayStats(const PlayStats &stats);
+struct PlayStats {
+  int Pos{};
+  long WinLossDiff{};
+  long DrawCount{};
+};
 
+GameStats GetGameStats(Game game);
+std::vector<PlayStats> GetPlayStatsForOpenPositions(Game game);
 } // namespace TicTacToe
