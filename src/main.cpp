@@ -105,8 +105,18 @@ void ShowEndGame(Game &game) {
   }
 }
 
-void ShowGameStats(const GameStats &stats) {
-  auto totalGames = stats.GameCount;
+std::string PlayStrategyToString(PlayStrategy strategy) {
+  switch (strategy) {
+  case PlayStrategy::AllPlays:
+    return "All Plays";
+  case PlayStrategy::OnlyPerfectPlays:
+    return "Max Win Plays";
+  }
+}
+
+void ShowGameStats(const GameStats &stats, PlayStrategy strategy) {
+  auto totalGames =
+      stats.PlayerOneWinCount + stats.PlayerTwoWinCount + stats.DrawCount;
   auto percentPlayerOneWins =
       totalGames > 0
           ? 100 * static_cast<double>(stats.PlayerOneWinCount) / totalGames
@@ -120,7 +130,7 @@ void ShowGameStats(const GameStats &stats) {
                      : 0;
 
   std::cout.precision(2);
-  std::cout << "Games Stats: { "
+  std::cout << "Games Stats (" << PlayStrategyToString(strategy) << "): { "
             << "TotalGames: " << totalGames
             << ", PlayerOneWins: " << stats.PlayerOneWinCount << "("
             << std::fixed << percentPlayerOneWins << "%)"
@@ -131,9 +141,10 @@ void ShowGameStats(const GameStats &stats) {
             << ", Turns: " << stats.TurnCount << " }" << std::endl;
 }
 
-void ShowPlayStats(Game game) {
-  auto playStats = GetPlayStatsForOpenPositions(game);
-  std::cout << "Play stats for current player by open postion: " << std::endl;
+void ShowPlayStats(Game game, PlayStrategy strategy) {
+  auto playStats = GetPlayStatsForOpenPositions(game, strategy);
+  std::cout << "Play stats for current player ("
+            << PlayStrategyToString(strategy) << "): " << std::endl;
   std::cout.precision(2);
   for (auto &stats : playStats) {
     std::cout << "\tPos(" << stats.Pos << "): "
@@ -147,8 +158,10 @@ void ShowPlayStats(Game game) {
 
 void RunSimToGetGameStats() {
   Game game;
-  auto stats = GetGameStats(game);
-  ShowGameStats(stats);
+  ShowGameStats(GetGameStats(game, PlayStrategy::AllPlays),
+                PlayStrategy::AllPlays);
+  ShowGameStats(GetGameStats(game, PlayStrategy::OnlyPerfectPlays),
+                PlayStrategy::OnlyPerfectPlays);
 }
 
 void PlayTwoPlayerGame() {
@@ -157,7 +170,8 @@ void PlayTwoPlayerGame() {
 
     while (!game.IsGameOver()) {
       ShowBoard(game);
-      ShowPlayStats(game);
+      ShowPlayStats(game, PlayStrategy::OnlyPerfectPlays);
+      ShowPlayStats(game, PlayStrategy::AllPlays);
       game.PlayTurn(
           GetPlayerInputForTurn(GetPlayerName(game.GetCurrentPlayer())));
     }

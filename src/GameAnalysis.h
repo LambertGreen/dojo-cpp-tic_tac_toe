@@ -11,7 +11,6 @@ using Player = Game::Player;
 
 struct GameStats {
   long TurnCount{};
-  long GameCount{};
   long PlayerOneWinCount{};
   long PlayerTwoWinCount{};
   long DrawCount{};
@@ -24,6 +23,14 @@ struct PlayStats {
   double DrawProbalitity;
 };
 
-GameStats GetGameStats(Game game);
-std::vector<PlayStats> GetPlayStatsForOpenPositions(Game game);
+enum class PlayStrategy {
+  AllPlays,
+  OnlyPerfectPlays,
+};
+
+enum class GameResult { IsDraw, PlayerOneWon, PlayerTwoWon };
+
+GameStats GetGameStats(Game game, PlayStrategy playStrategy);
+std::vector<PlayStats> GetPlayStatsForOpenPositions(Game game,
+                                                    PlayStrategy playStrategy);
 } // namespace TicTacToe
