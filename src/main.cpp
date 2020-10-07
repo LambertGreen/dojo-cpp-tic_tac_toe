@@ -185,7 +185,7 @@ void PlayTwoPlayerGame() {
 
 } // namespace
 
-int main(int argc, char *argv[]) {
+int main() {
 
   ShowAppHeader();
 
@@ -194,6 +194,7 @@ int main(int argc, char *argv[]) {
 
     ShowMainMenu();
     switch (GetMainMenuOption()) {
+
     case Option::Exit:
       exit = true;
       break;
