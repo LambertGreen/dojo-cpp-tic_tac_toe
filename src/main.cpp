@@ -43,7 +43,8 @@ Option GetMainMenuOption() {
       return Option::RunSimToGetGameStats;
     if (input == 'n')
       return Option::NewGame;
-    std::cout << "Not a valid option!" << std::endl;
+
+    throw std::runtime_error("Not a valid option!");
   }
 }
 
@@ -192,22 +193,27 @@ int main() {
   bool exit = false;
   while (!exit) {
 
-    ShowMainMenu();
-    switch (GetMainMenuOption()) {
+    try {
+      ShowMainMenu();
+      switch (GetMainMenuOption()) {
 
-    case Option::Exit:
-      exit = true;
-      break;
+      case Option::Exit:
+        exit = true;
+        break;
 
-    case Option::NewGame:
-      PlayTwoPlayerGame();
-      break;
+      case Option::NewGame:
+        PlayTwoPlayerGame();
+        break;
 
-    case Option::RunSimToGetGameStats:
-      RunSimToGetGameStats();
-      break;
+      case Option::RunSimToGetGameStats:
+        RunSimToGetGameStats();
+        break;
+      }
+    } catch (std::exception &ex) {
+      ShowException(ex);
     }
   }
+
   ShowExit();
 
   return 0;
